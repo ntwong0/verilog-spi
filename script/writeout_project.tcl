@@ -1,5 +1,5 @@
 # Maintainer    ntwong0
-# Version       1.2.2018-07-08-1851
+# Version       1.4.2018-07-08-2309
 
 # Purpose
 #    This script writes the attributes and parameters of the current Vivado project out. 
@@ -7,9 +7,8 @@
 #    may be used to regenerate the project in another filesystem location.
 
 # Generate the base create_project.tcl script
-set script_directory "[get_property NAME [current_project]]_vcs/script"
+set script_directory "../script"
 cd [get_property DIRECTORY [current_project]]
-cd ../
 write_project_tcl -force -all_properties -no_copy_sources -use_bd_files ./$script_directory/create_project.tcl
 
 # The following code tackles two shortcomings with how Vivado expects users 
@@ -19,9 +18,11 @@ write_project_tcl -force -all_properties -no_copy_sources -use_bd_files ./$scrip
 #    the project's files and directories.
 # 2. If the project already exists, Vivado expects users to edit the create_project.tcl
 #    to include the -force flag in order to overwrite the existing project.
+# 3. write_project_tcl tries to guess that the intended project directory is relative to 
+#    the sources in a particular way. It is wrong.
 
 # Initial setup
-cd ./[get_property NAME [current_project]]_vcs/script
+cd ../script
 set timestamp [clock format [clock seconds] -format {%Y%m%d%H%M%S}]
 set filename "create_project.tcl"
 set temp     $filename.new.$timestamp
@@ -31,18 +32,20 @@ set out [open $temp     w]
 
 # Tackling #1
 set first_line {cd [file dirname [file normalize [info script]]]}
-set second_line {cd ../..}
+set second_line {cd ..}
 puts $out $first_line
 puts $out $second_line
 
-# Tackling #2
+# Tackling #2 and #3
 # a. Read the base file, copying each line to the temporary file.
 # b. If the target line is found, append the -force flag before copying
 # c. Rename the temporary file as the base file
 while {[gets $in line] != -1} {
-    # (b)
+    # (b), (3)
     if [regexp {create_project \$} "$line"] {
         append line " " "-force"
+    } elseif [regexp {\$origin_dir/..} "$line"] {
+        regsub {\$origin_dir/..} $line {$origin_dir} line
     }
     # (a)
     puts $out $line
