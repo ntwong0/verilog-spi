@@ -1,7 +1,2 @@
 *.DS_Store
 verilog-spi/
-!constr/
-!script/
-!sim/
-!src/
-!wcfg/
