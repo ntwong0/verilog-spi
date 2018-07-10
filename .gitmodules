@@ -1,0 +1,3 @@
+[submodule "CMPE127-Toolkit"]
+	path = CMPE127-Toolkit
+	url = https://github.com/ntwong0/CMPE127-Toolkit.git
