@@ -1,5 +1,6 @@
 # verilog-spi
 ## Dependencies
+Please include the following dependencies in the same parent directory as this project.
 1. [CMPE127-Toolkit](https://github.com/kammce/CMPE127-Toolkit.git)
 
 ## Adding this project
