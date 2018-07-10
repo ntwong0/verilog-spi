@@ -1,7 +1,7 @@
 # verilog-spi
 ## Dependencies
 Please include the following dependencies in the same parent directory as this project.
-1. [CMPE127-Toolkit](https://github.com/kammce/CMPE127-Toolkit.git)
+1. [CMPE127-Toolkit](https://github.com/kammce/CMPE127-Toolkit.git) (Note: the SHIFTLOADREG module is currently under pull-request but can be referenced [here](https://github.com/ntwong0/CMPE127-Toolkit/blob/master/src/Memory.v#L465))
 
 ## Adding this project
 0. From your shell, change your working directory to the intended parent directory.
