@@ -46,3 +46,28 @@ Please keep all project files in the `verilog-spi` folder, such as:
 
 ## References
 1. [Using Vivado Design Suite with Version Control Systems](https://www.xilinx.com/support/documentation/application_notes/xapp1165.pdf)
+
+## How to interface to `flex_spi()`
+### Tie these to your SPI device
+* `ss`: Optional, serves as chip select. You can use your own GPIO instead.
+* `sck`: This clock runs at half the frequency of `clk`
+* `mosi`
+* `miso`
+### Clocking and control from your CPU
+* `clk`: You can add a clock divider here to slow down `sck`
+
+Use a register to hold the values for the following ports:
+* `rst`: Reset the SPI device, clearing all buffers and the transfer counter
+* `en`: Proceed to transfer data 
+* `oe`: Output the contents of the RECEIVE buffer `rx_buf()` onto `data`
+    * ***Note: be careful not to drive `data` while `oe` is active***
+* `we`: Write the contents of `data` onto the TRANSFER buffer `active_buffer()`
+* `cpol`: Clock polarity
+* `cpha`: Clock phase
+* `xfer_len`: Determines bit length of the SPI transaction
+### Status flags to your CPU
+Consider using a register to hold the values for the following ports:
+* `busy`: Indicates a transaction is in progress
+* `done`: Indicates a transaction has completed
+### Data from your CPU
+* `data`: Pair this with `xfer_len` to control the bit length of the data packet. Retain bits starting from MSb.
