@@ -6,7 +6,7 @@
 // Create Date: 01/03/2018 10:31:56 PM
 // Design Name: 
 // Module Name: spi_ctrl
-// Project Name: 
+// Project Name: verilog-spi
 // Target Devices: 
 // Tool Versions: 
 // Description: This module interfaces the CPU with the SPI bus
@@ -21,7 +21,7 @@
 
 module spi_ctrl(
     // SPI-specific ports
-    output  reg             ss,
+    output  wire            ss,
     output  reg             sck,
     // clocking and functionality
     input   wire            clk,
@@ -31,12 +31,12 @@ module spi_ctrl(
     input   wire            cpha,
     input   wire    [ 3:0]  xfer_len,
     // status
-    output  reg             busy, 
-    output  reg             done, 
+    output  wire            busy, 
+    output  wire            done, 
     // control
-    output  reg             i_load, 
-    output  reg             i_en, 
-    output  reg             tbuf_mosi_oe
+    output  wire            i_load, 
+    output  wire            i_en, 
+    output  wire            tbuf_mosi_oe
 );
 
     parameter  STATE_SIZE  = 3;
