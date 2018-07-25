@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module SPI(
+module base_spi(
     //  SPI-specific ports. This device is SPI master
     output  reg             ss,
     output  reg             sck,

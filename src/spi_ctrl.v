@@ -49,45 +49,45 @@ module spi_ctrl(
     parameter  S_WRITE1    = 3'h6;
 
     reg     [STATE_SIZE:0]  state;
-    reg              [3:0]  xfer_cnt;
+    reg              [4:0]  xfer_cnt;
 
     reg [ 5:0] controls;
     assign {ss, busy, done, i_load, i_en, tbuf_mosi_oe} = controls;
 
     always @(state or xfer_cnt) begin
-        case(state)                                                                                  // ss, busy, done, i_load, i_en, tbuf_mosi_oe
-            S_IDLE0:  begin if (cpol) begin sck <=  1;   end else begin sck <=  0; end   controls <= 6'b_1_____0_____0_______1_____0_____________0; end
-            S_LOAD0:  begin                 sck <=  sck;                                 controls <= 6'b_1_____1_____0_______0_____0_____________0; end
-            S_LOAD1:  begin                 sck <=  sck;                                 controls <= 6'b_0_____1_____0_______0_____0_____________0; end
-            S_WRITE0: begin                 sck <=  sck;                                 controls <= 6'b_0_____1_____0_______0_____1_____________1; end
-            S_WRITE1: begin                 sck <= ~sck;                                 controls <= 6'b_0_____1_____0_______0_____1_____________1; end
-            S_READ:   begin                 sck <= ~sck; if (xfer_cnt < xfer_len)  begin controls <= 6'b_0_____1_____0_______0_____0_____________1; end
-                                                         else                      begin controls <= 6'b_0_____1_____1_______0_____0_____________1; end end
-            S_DONE:   begin                 sck <= ~sck;                                 controls <= 6'b_0_____1_____1_______0_____0_____________0; end
+        case(state)                                                                                      // ss, busy, done, i_load, i_en, tbuf_mosi_oe
+            S_IDLE0:  begin if (cpol) begin sck <=  1;   end else begin sck <=  0; end       controls <= 6'b_1_____0_____0_______1_____0_____________0; end
+            S_LOAD0:  begin                 sck <=  sck;                                     controls <= 6'b_1_____1_____0_______0_____0_____________0; end
+            S_LOAD1:  begin                 sck <=  sck;                                     controls <= 6'b_0_____1_____0_______0_____0_____________0; end
+            S_WRITE0: begin                 sck <=  sck;                                     controls <= 6'b_0_____1_____0_______0_____1_____________1; end
+            S_WRITE1: begin                 sck <= ~sck;                                     controls <= 6'b_0_____1_____0_______0_____1_____________1; end
+            S_READ:   begin                 sck <= ~sck; if (xfer_cnt < xfer_len + 4)  begin controls <= 6'b_0_____1_____0_______0_____0_____________1; end
+                                                         else                          begin controls <= 6'b_0_____1_____1_______0_____0_____________1; end end
+            S_DONE:   begin                 sck <= ~sck;                                     controls <= 6'b_0_____1_____1_______0_____0_____________0; end
         endcase
     end
 
     always @(posedge clk or rst) begin
-        if     (rst) begin                                                                             state <= S_IDLE0; end
+        if     (rst) begin                                                                                 state <= S_IDLE0; end
 
         else if (en) begin case (state)
-                            S_IDLE0:    begin                           xfer_cnt <= 0;                 state <= S_LOAD0; end
+                            S_IDLE0:    begin                               xfer_cnt <= 0;                 state <= S_LOAD0; end
                             
-                            S_LOAD0:    begin                           xfer_cnt <= 0; if (cpha) begin state <= S_LOAD1; end
-                                                                                       else      begin state <= S_WRITE0; end end
+                            S_LOAD0:    begin                               xfer_cnt <= 0; if (cpha) begin state <= S_LOAD1; end
+                                                                                           else      begin state <= S_WRITE0; end end
                             
-                            S_LOAD1:    begin                                                          state <= S_WRITE1; end
+                            S_LOAD1:    begin                                                              state <= S_WRITE1; end
                             
-                            S_WRITE0:   begin                           xfer_cnt <= xfer_cnt + 1;      state <= S_READ; end
+                            S_WRITE0:   begin                               xfer_cnt <= xfer_cnt + 1;      state <= S_READ; end
                             
-                            S_WRITE1:   if (xfer_cnt < xfer_len)  begin xfer_cnt <= xfer_cnt + 1;      state <= S_READ; end
-                                        else                      begin                                state <= S_READ; end
+                            S_WRITE1:   if (xfer_cnt < xfer_len + 4)  begin xfer_cnt <= xfer_cnt + 1;      state <= S_READ; end
+                                        else                          begin                                state <= S_READ; end
                             
-                            S_READ:     if (xfer_cnt < xfer_len)  begin                                state <= S_WRITE1; end 
-                                        else                      begin if (cpha) begin                state <= S_IDLE0;  end
-                                                                        else      begin                state <= S_DONE;   end end
+                            S_READ:     if (xfer_cnt < xfer_len + 4)  begin                                state <= S_WRITE1; end 
+                                        else                          begin if (cpha) begin                state <= S_IDLE0;  end
+                                                                            else      begin                state <= S_DONE;   end end
                             
-                            S_DONE:     begin                                                          state <= S_IDLE0; end
+                            S_DONE:     begin                                                              state <= S_IDLE0; end
                         endcase 
         end
     end

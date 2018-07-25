@@ -24,11 +24,11 @@ module flex_spi_tb();
     
     wire ss, sck, mosi, busy, done;
     reg miso, clk, rst, en, oe, we, cpol, cpha;
-    reg [7:0] datain;
+    reg [15:0] datain;
     reg [3:0] xfer_len;
-    wire [7:0] data;
+    wire [15:0] data;
     
-    TRIBUFFER #(8) tbuf_data    (   .oe(we),
+    TRIBUFFER #(16) tbuf_data    (   .oe(we),
                                     .in(datain),
                                     .out(data)
                                 );
@@ -52,7 +52,7 @@ module flex_spi_tb();
                 
     initial
     begin
-        xfer_len = 8;
+        xfer_len = 12;
         miso = 1;
         clk  = 0;
         rst  = 1;
@@ -61,7 +61,7 @@ module flex_spi_tb();
         we   = 1;
         cpol = 0;
         cpha = 1;
-        datain = 8'hAA;
+        datain = 16'hAAAA;
         #5
             rst = 0;
         #10
@@ -69,6 +69,10 @@ module flex_spi_tb();
             we = 1;
         #10
             we = 0;
+        #150
+            en = 0;
+        #30
+            en = 1;
         #150
             miso = 0;
         #60

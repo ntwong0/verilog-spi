@@ -27,7 +27,7 @@ module spi_dp(
     input   wire            en,
     input   wire            oe,
     input   wire            we,
-    output  reg             done,
+    input   wire            done,
     inout   wire    [15:0]  data,
     input   wire            i_load,
     input   wire            i_en,

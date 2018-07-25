@@ -34,7 +34,7 @@ module spi_tb(
                                     .out(data)
                                 );
     
-    SPI spi_dev (   .ss(ss),
+    base_spi spi_dut (   .ss(ss),
                     .sck(sck),
                     .mosi(mosi),
                     .miso(miso),
