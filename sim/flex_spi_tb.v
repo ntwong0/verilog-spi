@@ -69,9 +69,12 @@ module flex_spi_tb();
             we = 1;
         #10
             we = 0;
-        #150
+        #170
             en = 0;
+            datain = 16'h7777;
+            we = 1;
         #30
+            we = 0;
             en = 1;
         #150
             miso = 0;

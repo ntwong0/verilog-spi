@@ -40,7 +40,7 @@ module spi_ctrl(
 );
 
     parameter  STATE_SIZE  = 3;
-    parameter  S_IDLE0     = 3'h0;
+    parameter  S_INIT      = 3'h0;
     parameter  S_LOAD0     = 3'h1;
     parameter  S_WRITE0    = 3'h2;
     parameter  S_READ      = 3'h3;
@@ -56,7 +56,7 @@ module spi_ctrl(
 
     always @(state or xfer_cnt) begin
         case(state)                                                                                      // ss, busy, done, i_load, i_en, tbuf_mosi_oe
-            S_IDLE0:  begin if (cpol) begin sck <=  1;   end else begin sck <=  0; end       controls <= 6'b_1_____0_____0_______1_____0_____________0; end
+            S_INIT:   begin if (cpol) begin sck <=  1;   end else begin sck <=  0; end       controls <= 6'b_1_____0_____0_______1_____0_____________0; end
             S_LOAD0:  begin                 sck <=  sck;                                     controls <= 6'b_1_____1_____0_______0_____0_____________0; end
             S_LOAD1:  begin                 sck <=  sck;                                     controls <= 6'b_0_____1_____0_______0_____0_____________0; end
             S_WRITE0: begin                 sck <=  sck;                                     controls <= 6'b_0_____1_____0_______0_____1_____________1; end
@@ -68,10 +68,10 @@ module spi_ctrl(
     end
 
     always @(posedge clk or rst) begin
-        if     (rst) begin                                                                                 state <= S_IDLE0; end
+        if     (rst) begin                                                                                 state <= S_INIT; end
 
         else if (en) begin case (state)
-                            S_IDLE0:    begin                               xfer_cnt <= 0;                 state <= S_LOAD0; end
+                            S_INIT:    begin                                xfer_cnt <= 0;                 state <= S_LOAD0; end
                             
                             S_LOAD0:    begin                               xfer_cnt <= 0; if (cpha) begin state <= S_LOAD1; end
                                                                                            else      begin state <= S_WRITE0; end end
@@ -84,10 +84,10 @@ module spi_ctrl(
                                         else                          begin                                state <= S_READ; end
                             
                             S_READ:     if (xfer_cnt < xfer_len + 4)  begin                                state <= S_WRITE1; end 
-                                        else                          begin if (cpha) begin                state <= S_IDLE0;  end
+                                        else                          begin if (cpha) begin                state <= S_INIT;  end
                                                                             else      begin                state <= S_DONE;   end end
                             
-                            S_DONE:     begin                                                              state <= S_IDLE0; end
+                            S_DONE:     begin                                                              state <= S_INIT; end
                         endcase 
         end
     end
