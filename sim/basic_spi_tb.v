@@ -5,13 +5,13 @@
 // 
 // Create Date: 07/21/2018 15:00
 // Design Name: 
-// Module Name: flex_spi_tb
+// Module Name: basic_spi_tb
 // Project Name: verilog-spi
 // Target Devices: 
 // Tool Versions: 
 // Description: 
 // 
-// Dependencies: 
+// Dependencies: basic_spi.v
 // 
 // Revision:
 // Revision 0.01 - File Created
@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module flex_spi_tb();
+module basic_spi_tb();
     
     wire ss, sck, mosi, busy, done;
     reg miso, clk, rst, en, oe, we, cpol, cpha;
@@ -33,7 +33,7 @@ module flex_spi_tb();
                                     .out(data)
                                 );
     
-    flex_spi SPI (  .ss(ss),
+    basic_spi SPI (  .ss(ss),
                     .sck(sck),
                     .mosi(mosi),
                     .miso(miso),
@@ -73,7 +73,7 @@ module flex_spi_tb();
             en = 1;
         #10
             we = 0;
-        #160
+        #155
             en = 0;
             datain = 16'h7777;
             we = 1;
